@@ -51,10 +51,11 @@ func (w *Wrapper) Incr(ctx context.Context, key string) (cmd IntCmd) {
 
 }
 
-func (w *Wrapper) Ping() (error, string) {
+func (w *Wrapper) Ping(ctx context.Context) (cmd StatusCmd) {
+	var recordCallFunc = recordCall(ctx, "go.redis.ping", w.instanceName)
+	defer func() {
+		recordCallFunc(cmd)
+	}()
 	res := w.client.Ping()
-	if res.Err() != nil {
-		return res.Err(), ""
-	}
-	return nil, res.String()
+	return res
 }
