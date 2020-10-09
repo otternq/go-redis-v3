@@ -56,6 +56,6 @@ func (w *Wrapper) Ping(ctx context.Context) (cmd StatusCmd) {
 	defer func() {
 		recordCallFunc(cmd)
 	}()
-	res := w.client.Ping()
-	return res
+	cmd = w.client.Ping()
+	return cmd
 }
