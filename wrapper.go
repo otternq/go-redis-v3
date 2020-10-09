@@ -40,3 +40,22 @@ func (w *Wrapper) Set(ctx context.Context, key string, value interface{}, expira
 	cmd = w.client.Set(key, value, expiration)
 	return
 }
+
+func (w *Wrapper) Incr(ctx context.Context, key string) (cmd IntCmd) {
+	var recordCallFunc = recordCall(ctx, "go.redis.incr", w.instanceName)
+	defer func() {
+		recordCallFunc(cmd)
+	}()
+	cmd = w.client.Incr(key)
+	return
+
+}
+
+func (w *Wrapper) Ping(ctx context.Context) (cmd StatusCmd) {
+	var recordCallFunc = recordCall(ctx, "go.redis.ping", w.instanceName)
+	defer func() {
+		recordCallFunc(cmd)
+	}()
+	cmd = w.client.Ping()
+	return cmd
+}

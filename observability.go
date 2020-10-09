@@ -7,6 +7,7 @@ import (
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
+	"gopkg.in/redis.v3"
 )
 
 const (
@@ -137,7 +138,7 @@ func recordCall(ctx context.Context, method string, instanceName string) func(cm
 			}
 		)
 
-		if cmd.Err() != nil {
+		if cmd.Err() != nil && cmd.Err() != redis.Nil {
 			tags = append(tags, tag.Insert(GoRedisStatus, statusError))
 		} else {
 			tags = append(tags, tag.Insert(GoRedisStatus, statusOK))
