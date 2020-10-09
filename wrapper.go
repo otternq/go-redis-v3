@@ -51,10 +51,10 @@ func (w *Wrapper) Incr(ctx context.Context, key string) (cmd IntCmd) {
 
 }
 
-func (w *Wrapper) Ping() error {
+func (w *Wrapper) Ping() (error, string) {
 	res := w.client.Ping()
 	if res.Err() != nil {
-		return res.Err()
+		return res.Err(), ""
 	}
-	return nil
+	return nil, res.String()
 }
