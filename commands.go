@@ -25,3 +25,10 @@ type StringCmd interface {
 	Uint64() (uint64, error)
 	Val() string
 }
+
+type IntCmd interface {
+	Val() int64
+	String() string
+	Err() error
+	Result() (int64, error)
+}
