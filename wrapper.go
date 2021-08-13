@@ -51,6 +51,31 @@ func (w *Wrapper) Incr(ctx context.Context, key string) (cmd IntCmd) {
 
 }
 
+func (w *Wrapper) HGet(ctx context.Context, key, field string) (cmd StringCmd) {
+	var recordCallFunc = recordCall(ctx, "go.redis.hget", w.instanceName)
+	defer func() {
+		recordCallFunc(cmd)
+	}()
+	cmd = w.client.HGet(key, field)
+	return
+}
+func (w *Wrapper) HSet(ctx context.Context, key, field, value string) (cmd BoolCmd) {
+	var recordCallFunc = recordCall(ctx, "go.redis.hset", w.instanceName)
+	defer func() {
+		recordCallFunc(cmd)
+	}()
+	cmd = w.client.HSet(key, field, value)
+	return
+}
+func (w *Wrapper) HKeys(ctx context.Context, key string) (cmd StringSliceCmd) {
+	var recordCallFunc = recordCall(ctx, "go.redis.hkeys", w.instanceName)
+	defer func() {
+		recordCallFunc(cmd)
+	}()
+	cmd = w.client.HKeys(key)
+	return
+}
+
 func (w *Wrapper) Ping(ctx context.Context) (cmd StatusCmd) {
 	var recordCallFunc = recordCall(ctx, "go.redis.ping", w.instanceName)
 	defer func() {
