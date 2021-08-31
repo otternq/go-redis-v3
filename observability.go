@@ -7,6 +7,7 @@ import (
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
+	"go.opencensus.io/trace"
 	"gopkg.in/redis.v3"
 )
 
@@ -127,7 +128,17 @@ func RegisterAllViews() error {
 }
 
 func recordCall(ctx context.Context, method string, instanceName string) func(cmd Cmd) {
-	var startTime = time.Now()
+	var (
+		startTime = time.Now()
+		span      *trace.Span
+	)
+
+	ctx, span = trace.StartSpan(ctx, "go.redis/client/"+method)
+
+	span.AddAttributes(
+		trace.StringAttribute("go.redis.instance_name", instanceName),
+		trace.StringAttribute("go.redis.method", method),
+	)
 
 	return func(cmd Cmd) {
 		var (
@@ -140,6 +151,7 @@ func recordCall(ctx context.Context, method string, instanceName string) func(cm
 
 		if cmd.Err() != nil && cmd.Err() != redis.Nil {
 			tags = append(tags, tag.Insert(GoRedisStatus, statusError))
+			span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: cmd.Err().Error()})
 		} else {
 			tags = append(tags, tag.Insert(GoRedisStatus, statusOK))
 		}
