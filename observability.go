@@ -149,6 +149,8 @@ func recordCall(ctx context.Context, method string, instanceName string) func(cm
 			}
 		)
 
+		defer span.End()
+
 		if cmd.Err() != nil && cmd.Err() != redis.Nil {
 			tags = append(tags, tag.Insert(GoRedisStatus, statusError))
 			span.SetStatus(trace.Status{Code: trace.StatusCodeUnknown, Message: cmd.Err().Error()})
