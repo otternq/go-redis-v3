@@ -11,7 +11,11 @@ type Client interface {
 	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) StatusCmd
 }
 
-type IncClient interface {
+type ExpireClient interface {
+	Expire(ctx context.Context, key string, expiration time.Duration) BoolCmd
+}
+
+type IncrClient interface {
 	Incr(ctx context.Context, key string) IntCmd
 	Decr(ctx context.Context, key string) IntCmd
 }
