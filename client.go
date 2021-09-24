@@ -11,6 +11,11 @@ type Client interface {
 	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) StatusCmd
 }
 
+type IncClient interface {
+	Incr(ctx context.Context, key string) IntCmd
+	Decr(ctx context.Context, key string) IntCmd
+}
+
 type HashClient interface {
 	HGet(ctx context.Context, key, field string) StringCmd
 	HSet(ctx context.Context, key, field, value string) BoolCmd
