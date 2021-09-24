@@ -14,11 +14,26 @@ func Wrap(client *pkgredis.Client, instanceName string) *Wrapper {
 	}
 }
 
-var _ Client = &Wrapper{}
+var (
+	_ Client       = &Wrapper{}
+	_ ExpireClient = &Wrapper{}
+	_ IncrClient   = &Wrapper{}
+	_ HashClient   = &Wrapper{}
+)
 
 type Wrapper struct {
 	client       *pkgredis.Client
 	instanceName string
+}
+
+func (w *Wrapper) Expire(ctx context.Context, key string, expiration time.Duration) (cmd BoolCmd) {
+	var recordCallFunc = recordCall(ctx, "go.redis.expire", w.instanceName)
+	defer func() {
+		recordCallFunc(cmd)
+	}()
+
+	cmd = w.client.Expire(key, expiration)
+	return
 }
 
 func (w *Wrapper) Get(ctx context.Context, key string) (cmd StringCmd) {
@@ -57,7 +72,7 @@ func (w *Wrapper) Decr(ctx context.Context, key string) (cmd IntCmd) {
 		recordCallFunc(cmd)
 	}()
 	cmd = w.client.Decr(key)
-  return
+	return
 }
 
 func (w *Wrapper) HGet(ctx context.Context, key, field string) (cmd StringCmd) {
