@@ -26,9 +26,23 @@ type StringCmd interface {
 	Val() string
 }
 
+type StringSliceCmd interface {
+	Err() error
+	Result() ([]string, error)
+	String() string
+	Val() []string
+}
+
 type IntCmd interface {
 	Val() int64
 	String() string
 	Err() error
 	Result() (int64, error)
+}
+
+type BoolCmd interface {
+	Err() error
+	Result() (bool, error)
+	String() string
+	Val() bool
 }
