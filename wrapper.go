@@ -51,6 +51,15 @@ func (w *Wrapper) Incr(ctx context.Context, key string) (cmd IntCmd) {
 
 }
 
+func (w *Wrapper) Decr(ctx context.Context, key string) (cmd IntCmd) {
+	var recordCallFunc = recordCall(ctx, "go.redis.decr", w.instanceName)
+	defer func() {
+		recordCallFunc(cmd)
+	}()
+	cmd = w.client.Decr(key)
+  return
+}
+
 func (w *Wrapper) HGet(ctx context.Context, key, field string) (cmd StringCmd) {
 	var recordCallFunc = recordCall(ctx, "go.redis.hget", w.instanceName)
 	defer func() {
