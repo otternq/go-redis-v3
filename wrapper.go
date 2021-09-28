@@ -14,11 +14,25 @@ func Wrap(client *pkgredis.Client, instanceName string) *Wrapper {
 	}
 }
 
-var _ Client = &Wrapper{}
+var (
+	_ Client     = &Wrapper{}
+	_ EvalClient = &Wrapper{}
+	_ HashClient = &Wrapper{}
+)
 
 type Wrapper struct {
 	client       *pkgredis.Client
 	instanceName string
+}
+
+func (w *Wrapper) Eval(ctx context.Context, script string, keys, args []string) (cmd Cmd) {
+	var recordCallFunc = recordCall(ctx, "go.redis.eval", w.instanceName)
+	defer func() {
+		recordCallFunc(cmd)
+	}()
+
+	cmd = w.client.Eval(script, keys, args)
+	return
 }
 
 func (w *Wrapper) Get(ctx context.Context, key string) (cmd StringCmd) {
@@ -57,7 +71,7 @@ func (w *Wrapper) Decr(ctx context.Context, key string) (cmd IntCmd) {
 		recordCallFunc(cmd)
 	}()
 	cmd = w.client.Decr(key)
-  return
+	return
 }
 
 func (w *Wrapper) HGet(ctx context.Context, key, field string) (cmd StringCmd) {
