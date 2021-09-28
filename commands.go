@@ -1,10 +1,22 @@
 package redis
 
-import "fmt"
+import (
+	"fmt"
+
+	pkgredis "gopkg.in/redis.v3"
+)
+
+type observabilityCmd interface {
+	Err() error
+	fmt.Stringer
+}
+
+var _ Cmd = &pkgredis.Cmd{}
 
 type Cmd interface {
 	Err() error
-	fmt.Stringer
+	Result() (interface{}, error)
+	String() string
 }
 
 type StatusCmd interface {

@@ -126,10 +126,10 @@ func RegisterAllViews() error {
 	return view.Register(DefaultViews...)
 }
 
-func recordCall(ctx context.Context, method string, instanceName string) func(cmd Cmd) {
+func recordCall(ctx context.Context, method string, instanceName string) func(cmd observabilityCmd) {
 	var startTime = time.Now()
 
-	return func(cmd Cmd) {
+	return func(cmd observabilityCmd) {
 		var (
 			timeSpentMs = time.Since(startTime).Milliseconds()
 			tags        = []tag.Mutator{
